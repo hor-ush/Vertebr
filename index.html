@@ -151,4 +151,74 @@ const t=s=>LG==="en"&&D[s]!==undefined?D[s]:s;
 const FORM={tochnist:"",dostupnist:""};
 const V={
 tochnist:{h:"Почуйте, як пристрій підказує, коли вправа при сколіозі виконана неточно",l:"Vertebr: два датчики руху на поясі й грудній стрічці стежать за положенням тіла й підказують звуком, коли рух замалий чи надто великий."},
-dostupnist:{h:"Вправи при сколіозі вд
+dostupnist:{h:"Вправи при сколіозі вдома з підказкою: спробуйте демо",l:"Vertebr: пристрій, який клініка може видавати в оренду. Два датчики підказують звуком під час вправ, щоб вони були точнішими без зайвих поїздок і витрат."}};
+const CH={A:{n:"Поперек: нахил таза вперед-назад",z:["назад","вперед"],r:[-4,4]},
+B:{n:"Таз: шифт убік",z:["ліворуч","праворуч"],r:[6,12]},
+C:{n:"Груди: шифт убік (протилежно тазу)",z:["ліворуч","праворуч"],r:[-12,-6]},
+D:{n:"Груди: деротація",z:["проти годинникової","за годинниковою"],r:[3,8]},
+E:{n:"Таз: деротація (протилежно грудям)",z:["проти годинникової","за годинниковою"],r:[-8,-3]}};
+const K=Object.keys(CH),HOLD=3000;
+const T={A:["Фіксація: поставте поперек у нейтраль, щоб таз не був нахилений вперед чи назад, і втримайте кілька секунд."],
+1:"Корекція: таз у один бік, груди в протилежний, з мінімальною деротацією. Втримайте кілька секунд.",2:"Утримуйте положення: тиша означає, що все в зеленій зоні."};
+const LV={beg:"Початківець: зелена зона ширша, головне щиро намагатися, точність прийде пізніше.",adv:"Просунутий: зелена зона вужча, потрібна точніша корекція. Терапевт змінює рівень, коли пацієнт прогресує."};
+const S={lv:"beg",step:0,snd:false},val={A:0,B:0,C:0,D:0,E:0},out={A:0,B:0,C:0,D:0,E:0};
+let ac,okT=0,lastCue=0;
+$("#chs").innerHTML=K.map(k=>`<div class="ch" id="c${k}"><div class="chh"><span class="cn">${t(CH[k].n)}</span><span class="st" id="s${k}"></span></div><div class="sl"><div class="rail"></div><div class="band" id="b${k}"></div><input type="range" min="-30" max="30" value="0" id="r${k}" aria-label="${t(CH[k].n)}"></div><div class="ends"><span class="z0">${t(CH[k].z[0])}</span><span class="z1">${t(CH[k].z[1])}</span></div></div>`).join("");
+const dir=k=>(k!=="A"&&CH[k].r[0]+CH[k].r[1]<0)?-1:1;
+function rng(k){let[lo,hi]=CH[k].r;const w=S.lv==="beg"?4:0;return[Math.max(-30,lo-w),Math.min(30,hi+w)]}
+const act=k=>k==="A"||S.step>0;
+function st(k){const r=rng(k),d=dir(k),x=val[k]*d,lo=d>0?r[0]:-r[1],hi=d>0?r[1]:-r[0];return x<lo?-1:x>hi?1:0}
+const pc=v=>(v+30)/60*100;
+function beep(f,d,t="sine",at=0){if(!S.snd||!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;o.connect(g);g.connect(ac.destination);const s=ac.currentTime+at;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.25,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.start(s);o.stop(s+d+.02)}
+const chime=()=>{beep(660,.18);beep(880,.25,"sine",.18)};
+const colr=ks=>{const a=ks.filter(act);if(!a.length)return"var(--mut)";for(const k of a){const x=st(k);if(x)return(k!=="A"&&x>0)?"var(--high)":"var(--low)"}return"var(--ok)"};
+const paint=(id,c)=>{const e=$(id);e.style.fill=c;e.style.stroke=c};
+function draw(){
+for(const k of K){const r=rng(k),b=$("#b"+k),s=$("#s"+k),on=act(k);$("#c"+k).classList.toggle("off",!on);
+b.style.left=pc(r[0])+"%";b.style.width=(pc(r[1])-pc(r[0]))+"%";
+if(!on){s.textContent=t("Поки не потрібно");s.className="st";continue}
+const x=st(k);s.textContent=k==="A"?(x?t("Не в нейтралі"):t("У нейтралі")):(x<0?t("Замало"):x>0?t("Забагато"):t("У зоні"));s.className="st "+(x?(k!=="A"&&x>0?"high":"low"):"ok")}
+$("#gCh").setAttribute("transform",`translate(${val.C*.9} 0) rotate(${val.C*.3} 100 104)`);
+$("#gPe").setAttribute("transform",`translate(${val.B*.9} 0) rotate(${val.B*.3} 100 206)`);
+$("#gD").setAttribute("transform",`rotate(${val.D*1.3} 100 52)`);$("#gE").setAttribute("transform",`rotate(${val.E*1.3} 100 122)`);$("#gA").setAttribute("transform",`rotate(${val.A} 100 100)`);
+const cc=colr(["C","D"]),pp=colr(["A","B","E"]);paint("#bCh",cc);paint("#eD",cc);paint("#bPe",pp);paint("#eE",colr(["E"]));paint("#bA",colr(["A"]))}
+function tick(){const n=performance.now();let cue=null;
+for(const k of K){if(!act(k)){out[k]=0;continue}const x=st(k);if(x){out[k]=out[k]||n;if(n-out[k]>450&&!cue)cue=[k,x]}else out[k]=0}
+const all=K.filter(act),allOk=all.every(k=>st(k)===0);
+if(S.step<2){if(allOk){okT=okT||n;const p=Math.min(1,(n-okT)/HOLD);$("#pg").style.width=p*100+"%";if(p>=1){S.step++;okT=0;chime();$("#pg").style.width="0%"}}else{okT=0;$("#pg").style.width="0%"}}else $("#pg").style.width="100%";
+if(cue&&n-lastCue>1600){lastCue=n;const k=cue[0],x=cue[1];
+if(k==="A")beep(520,.3,"triangle");else if(x<0)beep(330,.25);else{beep(880,.12);beep(880,.12,"sine",.18)}
+$("#cue").textContent=(S.snd?t("Звук: "):t("Звук був би: "))+(k==="A"?t("середній тон, поперек вийшов із нейтралі"):x<0?t("низький тон, замало"):t("високий тон, забагато"))+" ("+t(CH[k].n)+")"}
+$$(".steps span").forEach((e,i)=>e.className=i<S.step?"done":i===S.step?"cur":"");
+$("#msg").textContent=(S.step===0?t("Крок 1. ")+t(T.A[0]):S.step===1?t("Крок 2. ")+t(T[1]):t("Крок 3. ")+t(T[2]))+(S.step<2&&okT?t(" Тримайте…"):"");
+draw()}
+function setVals(o){for(const k of K){val[k]=o[k]??0;$("#r"+k).value=val[k]}tick()}
+function reset(){S.step=0;okT=0;K.forEach(k=>out[k]=0);$("#cue").textContent=S.snd?t("Звук: поки тиша."):t("Звук вимкнено: підказку видно текстом.");setVals({})}
+K.forEach(k=>$("#r"+k).addEventListener("input",e=>{val[k]=+e.target.value;draw()}));
+$$(".seg button").forEach(b=>b.onclick=()=>{S[b.parentNode.dataset.g]=b.dataset.v;b.parentNode.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));$("#lvd").textContent=t(LV[S.lv]);reset()});
+$("#rst").onclick=reset;
+$("#ok").onclick=()=>{const o={};for(const k of K){const r=rng(k);o[k]=k==="A"?0:Math.round((r[0]+r[1])/2)}setVals(o)};
+$("#er").onclick=()=>{const o={...val};if(S.step>0){o.D=Math.min(30,rng("D")[1]+9)}else{o.A=rng("A")[1]+10}setVals(o)};
+$("#snd").onclick=e=>{S.snd=!S.snd;e.target.setAttribute("aria-pressed",S.snd);e.target.textContent=S.snd?t("Звук увімкнено"):t("Увімкнути звук");if(S.snd){ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume();beep(660,.15)}};
+function setV(){const h=location.hash.slice(1),v=V[h]?h:"tochnist";$("#h1").textContent=t(V[v].h);$("#lead").textContent=t(V[v].l);const c=$("#cta"),u=FORM[v];
+if(u){c.href=u;c.textContent=t("Залишити відгук");c.removeAttribute("aria-disabled")}else{c.removeAttribute("href");c.textContent=t("Форма відгуку з’явиться тут");c.setAttribute("aria-disabled","true")}}
+addEventListener("hashchange",setV);setV();$("#lvd").textContent=t(LV.beg);reset();setInterval(tick,100);
+const SKIPID=new Set(["h1","lead","cta","snd","cue","msg","lvd","pg","chs"]);
+const TITLE_UK="Vertebr: підказка під час вправ при сколіозі";
+function relang(){
+document.documentElement.lang=LG;document.title=t(TITLE_UK);
+$$("main *").forEach(el=>{if(SKIPID.has(el.id)||el.closest("#chs")||el.closest(".lang"))return;
+if(el.__uk===undefined){const h=el.innerHTML;if(D[h]===undefined)return;el.__uk=h}
+el.innerHTML=LG==="en"?D[el.__uk]:el.__uk});
+$$("[aria-label]").forEach(el=>{if(el.closest("#chs")||el.closest(".lang"))return;if(el.__al===undefined)el.__al=el.getAttribute("aria-label");el.setAttribute("aria-label",t(el.__al))});
+K.forEach(k=>{$("#c"+k+" .cn").textContent=t(CH[k].n);$("#r"+k).setAttribute("aria-label",t(CH[k].n));$("#c"+k+" .z0").textContent=t(CH[k].z[0]);$("#c"+k+" .z1").textContent=t(CH[k].z[1])});
+setV();$("#lvd").textContent=t(LV[S.lv]);
+$("#snd").textContent=S.snd?t("Звук увімкнено"):t("Увімкнути звук");
+$("#cue").textContent=S.snd?t("Звук: поки тиша."):t("Звук вимкнено: підказку видно текстом.");
+$$(".lang button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===LG));
+tick()}
+$$(".lang button").forEach(b=>b.onclick=()=>{LG=b.dataset.l;try{localStorage.setItem("vertebr-lang",LG)}catch(e){}try{const u=new URL(location.href);u.searchParams.set("lang",LG);history.replaceState(null,"",u.href)}catch(e){}relang()});
+relang();
+</script>
+</body>
+</html>
