@@ -50,9 +50,14 @@ svg text{fill:var(--mut);font:12px system-ui,sans-serif}
 .cta{display:inline-block;padding:12px 20px;border-radius:12px;background:var(--acc);color:var(--onacc);font-weight:700;text-decoration:none;margin-top:8px}
 .cta[aria-disabled="true"]{opacity:.55}
 footer{margin-top:36px;font-size:13px;color:var(--mut);border-top:1px solid var(--line);padding-top:12px}
+.lang{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:20;display:flex;gap:2px;padding:3px;border-radius:999px;background:var(--card);border:1px solid var(--line)}
+.lang button{font:600 13px/1 system-ui,sans-serif;padding:7px 11px;border-radius:999px;border:0;background:transparent;color:var(--mut)}
+.lang button[aria-pressed="true"]{background:var(--acc);color:var(--onacc)}
+main{padding-top:56px}
 </style>
 </head>
 <body>
+<div class="lang" role="group" aria-label="Language / Мова"><button type="button" data-l="uk" aria-pressed="true">UA</button><button type="button" data-l="en" aria-pressed="false">EN</button></div>
 <main>
 <h1 id="h1"></h1>
 <p class="lead">Сколіоз лікують вправами, але вдома їх виконують без нагляду, і помилки лишаються непоміченими.</p>
@@ -138,61 +143,14 @@ footer{margin-top:36px;font-size:13px;color:var(--mut);border-top:1px solid var(
 </main>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const D={"Сколіоз лікують вправами, але вдома їх виконують без нагляду, і помилки лишаються непоміченими.": "Scoliosis is treated with exercises, but at home they are done without supervision, and mistakes go unnoticed.", "Так виглядатиме пристрій": "This is what the device will look like", "Пристрій ззаду й спереду: пояс і стрічка з двома датчиками, бокс спереду": "Device from the back and front: belt and strap with two sensors, box at the front", "Ззаду": "Back", "Спереду": "Front", "<b>Кільце</b> це датчик руху. Один на грудях (рівень лопаток), один на тазі (над хрестцем).": "<b>Rings</b> are motion sensors. One on the chest (shoulder-blade level), one on the pelvis (above the sacrum).", "<b>Зелені смуги</b> це еластичні пояс і стрічка із застібкою спереду. Їх вдягають самі.": "<b>Green bands</b> are an elastic belt and strap with a front fastening. You put them on yourself.", "<b>Темна смужка</b> по спині еластична, в ній кабель. <b>Темний прямокутник</b> спереду це бокс із платою, акумулятором і зумером.": "<b>The dark strip</b> along the back is elastic and holds the cable. <b>The dark rectangle</b> at the front is a box with the board, battery and buzzer.", "Спробуйте самі": "Try it yourself", "Увімкніть звук.": "Turn the sound on.", "Натисніть «Показати правильне положення», потім «Зробити помилку», щоб почути підказку.": "Press “Show correct position”, then “Make a mistake” to hear the cue.", "Рухайте повзунки самі: зелена зона означає правильно, поза нею лунає звук.": "Move the sliders yourself: the green zone means correct, and outside it you will hear a sound.", "Демонстрація підказки": "Cue demonstration", "Вправа: лежачи на боці. Груди й таз коригуються в різні боки.": "Exercise: side-lying. The chest and pelvis are corrected in opposite directions.", "Рівень": "Level", "Початківець": "Beginner", "Просунутий": "Advanced", "1. Фіксація": "1. Set", "2. Корекція": "2. Correct", "3. Утримання": "3. Hold", "Ззаду: груди й таз зсуваються убік": "Back view: chest and pelvis shift sideways", "Ззаду: зсув убік": "Back view: sideways shift", "груди": "chest", "таз": "pelvis", "Зверху: повороти грудей і таза": "Top view: chest and pelvis rotations", "Зверху: повороти": "Top view: rotations", "ззаду": "back", "Збоку: нахил таза, поперек": "Side view: pelvic tilt, lower back", "Збоку: поперек": "Side view: lower back", "спереду": "front", "Кільця на малюнках показують, де стоять датчики.": "Rings in the drawings show where the sensors are placed.", "Показати правильне положення": "Show correct position", "Зробити помилку": "Make a mistake", "Спочатку": "Reset", "Як це працює": "How it works", "Терапевт задає зелену зону: межі руху для вашої вправи та рівня.": "The therapist sets the green zone: movement limits for your exercise and level.", "Два датчики на поясі й грудній стрічці міряють нахили й повороти тіла.": "Two sensors on the belt and chest strap measure the body’s tilts and rotations.", "Пристрій мовчить, поки ви в зоні, і подає звук, коли руху замало чи забагато.": "The device stays silent while you are in the zone and sounds a cue when the movement is too small or too large.", "Чим це не є": "What this is not", "Це не корсет, не діагностика й не заміна терапевта. Пристрій не міряє кут викривлення (це роблять за рентгеном) і не бачить, чи напружені м’язи. Зсув убік він бачить через нахил. Куди й наскільки коригувати, залежить від дуги, віку й фази лікування, і це визначає терапевт. Межі в демо умовні.": "This is not a brace, a diagnosis or a replacement for a therapist. The device does not measure the curve angle (that is done from an X-ray) and cannot tell whether muscles are tense. It detects sideways shift through tilt. Where and how much to correct depends on the curve, age and treatment stage, and the therapist 
+decides this. The limits in the demo are illustrative.", "Дані": "Data", "Пристрій зберігає лише кути під час вправи, дітям потрібна згода батьків. Ця сторінка нічого не збирає. Форма відгуку окрема, контакт у ній добровільний.": "The device stores only angles during the exercise, and children need parental consent. This page collects nothing. The feedback form is separate, and giving a contact there is voluntary.", "Де проєкт зараз": "Where the project is now", "Це студентський проєкт. Є опитування пацієнтів, батьків і терапевтів та консультації з фахівцями. Пристрою ще немає, тож зараз ми збираємо відгуки.": "This is a student project. We have surveys of patients, parents and therapists, and consultations with specialists. The device does not exist yet, so for now we are collecting feedback.", "Vertebr, студентський проєкт. Демонстрація не є медичною порадою.": "Vertebr, a student project. The demo is not medical advice.", "Vertebr: підказка під час вправ при сколіозі": "Vertebr: exercise cues for scoliosis", "Почуйте, як пристрій підказує, коли вправа при сколіозі виконана неточно": "Hear how the device cues you when a scoliosis exercise is done inaccurately", "Vertebr: два датчики руху на поясі й грудній стрічці стежать за положенням тіла й підказують звуком, коли рух замалий чи надто великий.": "Vertebr: two motion sensors on the belt and chest strap track body position and sound a cue when the movement is too small or too large.", "Вправи при сколіозі вдома з підказкою: спробуйте демо": "Scoliosis exercises at home with cues: try the demo", "Vertebr: пристрій, який клініка може видавати в оренду. Два датчики підказують звуком під час вправ, щоб вони були точнішими без зайвих поїздок і витрат.": "Vertebr: a device a clinic can lend out for rent. Two sensors give sound cues during exercises, so they are more accurate without extra trips and costs.", "Поперек: нахил таза вперед-назад": "Lower back: pelvic tilt forward-back", "назад": "back", "вперед": "forward", "Таз: шифт убік": "Pelvis: sideways shift", "ліворуч": "left", "праворуч": "right", "Груди: шифт убік (протилежно тазу)": "Chest: sideways shift (opposite to pelvis)", "Груди: деротація": "Chest: derotation", "проти годинникової": "counterclockwise", "за годинниковою": "clockwise", "Таз: деротація (протилежно грудям)": "Pelvis: derotation (opposite to chest)", "Фіксація: поставте поперек у нейтраль, щоб таз не був нахилений вперед чи назад, і втримайте кілька секунд.": "Set: put your lower back in neutral so the pelvis is not tilted forward or back, and hold for a few seconds.", "Корекція: таз у один бік, груди в протилежний, з мінімальною деротацією. Втримайте кілька секунд.": "Correct: pelvis to one side, chest to the opposite side, with minimal derotation. Hold for a few seconds.", "Утримуйте положення: тиша означає, що все в зеленій зоні.": "Hold the position: silence means everything is in the green zone.", "Початківець: зелена зона ширша, головне щиро намагатися, точність прийде пізніше.": "Beginner: the green zone is wider; the main thing is to try sincerely, and accuracy will come later.", "Просунутий: зелена зона вужча, потрібна точніша корекція. Терапевт змінює рівень, коли пацієнт прогресує.": "Advanced: the green zone is narrower and needs more precise correction. The therapist changes the level as the patient progresses.", "Поки не потрібно": "Not needed yet", "Не в нейтралі": "Not neutral", "У нейтралі": "Neutral", "Замало": "Too little", "Забагато": "Too much", "У зоні": "In zone", "Звук: ": "Sound: ", "Звук був би: ": "Sound would be: ", "середній тон, поперек вийшов із нейтралі": "medium tone, lower back left neutral", "низький тон, замало": "low tone, too little", "високий тон, забагато": "high tone, too much", "Крок 1. ": "Step 1. ", "Крок 2. ": 
+"Step 2. ", "Крок 3. ": "Step 3. ", " Тримайте…": " Hold…", "Звук: поки тиша.": "Sound: silent for now.", "Звук вимкнено: підказку видно текстом.": "Sound is off: the cue is shown as text.", "Звук увімкнено": "Sound on", "Увімкнути звук": "Turn sound on", "Залишити відгук": "Leave feedback", "Форма відгуку з’явиться тут": "The feedback form will appear here"};
+let LG="uk";
+try{const q=new URLSearchParams(location.search).get("lang");if(q==="en"||q==="uk")LG=q}catch(e){}
+if(!/[?&]lang=/.test(location.search)){try{const s=localStorage.getItem("vertebr-lang");if(s==="en"||s==="uk")LG=s}catch(e){}}
+const t=s=>LG==="en"&&D[s]!==undefined?D[s]:s;
 const FORM={tochnist:"",dostupnist:""};
 const V={
 tochnist:{h:"Почуйте, як пристрій підказує, коли вправа при сколіозі виконана неточно",l:"Vertebr: два датчики руху на поясі й грудній стрічці стежать за положенням тіла й підказують звуком, коли рух замалий чи надто великий."},
-dostupnist:{h:"Вправи при сколіозі вдома з підказкою: спробуйте демо",l:"Vertebr: пристрій, який клініка може видавати в оренду. Два датчики підказують звуком під час вправ, щоб вони були точнішими без зайвих поїздок і витрат."}};
-const CH={A:{n:"Поперек: нахил таза вперед-назад",z:["назад","вперед"],r:[-4,4]},
-B:{n:"Таз: шифт убік",z:["ліворуч","праворуч"],r:[6,12]},
-C:{n:"Груди: шифт убік (протилежно тазу)",z:["ліворуч","праворуч"],r:[-12,-6]},
-D:{n:"Груди: деротація",z:["проти годинникової","за годинниковою"],r:[3,8]},
-E:{n:"Таз: деротація (протилежно грудям)",z:["проти годинникової","за годинниковою"],r:[-8,-3]}};
-const K=Object.keys(CH),HOLD=3000;
-const T={A:["Фіксація: поставте поперек у нейтраль, щоб таз не був нахилений вперед чи назад, і втримайте кілька секунд."],
-1:"Корекція: таз у один бік, груди в протилежний, з мінімальною деротацією. Втримайте кілька секунд.",2:"Утримуйте положення: тиша означає, що все в зеленій зоні."};
-const LV={beg:"Початківець: зелена зона ширша, головне щиро намагатися, точність прийде пізніше.",adv:"Просунутий: зелена зона вужча, потрібна точніша корекція. Терапевт змінює рівень, коли пацієнт прогресує."};
-const S={lv:"beg",step:0,snd:false},val={A:0,B:0,C:0,D:0,E:0},out={A:0,B:0,C:0,D:0,E:0};
-let ac,okT=0,lastCue=0;
-$("#chs").innerHTML=K.map(k=>`<div class="ch" id="c${k}"><div class="chh"><span>${CH[k].n}</span><span class="st" id="s${k}"></span></div><div class="sl"><div class="rail"></div><div class="band" id="b${k}"></div><input type="range" min="-30" max="30" value="0" id="r${k}" aria-label="${CH[k].n}"></div><div class="ends"><span>${CH[k].z[0]}</span><span>${CH[k].z[1]}</span></div></div>`).join("");
-const dir=k=>(k!=="A"&&CH[k].r[0]+CH[k].r[1]<0)?-1:1;
-function rng(k){let[lo,hi]=CH[k].r;const w=S.lv==="beg"?4:0;return[Math.max(-30,lo-w),Math.min(30,hi+w)]}
-const act=k=>k==="A"||S.step>0;
-function st(k){const r=rng(k),d=dir(k),x=val[k]*d,lo=d>0?r[0]:-r[1],hi=d>0?r[1]:-r[0];return x<lo?-1:x>hi?1:0}
-const pc=v=>(v+30)/60*100;
-function beep(f,d,t="sine",at=0){if(!S.snd||!ac)return;const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;o.connect(g);g.connect(ac.destination);const s=ac.currentTime+at;g.gain.setValueAtTime(.0001,s);g.gain.exponentialRampToValueAtTime(.25,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+d);o.start(s);o.stop(s+d+.02)}
-const chime=()=>{beep(660,.18);beep(880,.25,"sine",.18)};
-const colr=ks=>{const a=ks.filter(act);if(!a.length)return"var(--mut)";for(const k of a){const x=st(k);if(x)return(k!=="A"&&x>0)?"var(--high)":"var(--low)"}return"var(--ok)"};
-const paint=(id,c)=>{const e=$(id);e.style.fill=c;e.style.stroke=c};
-function draw(){
-for(const k of K){const r=rng(k),b=$("#b"+k),s=$("#s"+k),on=act(k);$("#c"+k).classList.toggle("off",!on);
-b.style.left=pc(r[0])+"%";b.style.width=(pc(r[1])-pc(r[0]))+"%";
-if(!on){s.textContent="Поки не потрібно";s.className="st";continue}
-const x=st(k);s.textContent=k==="A"?(x?"Не в нейтралі":"У нейтралі"):(x<0?"Замало":x>0?"Забагато":"У зоні");s.className="st "+(x?(k!=="A"&&x>0?"high":"low"):"ok")}
-$("#gCh").setAttribute("transform",`translate(${val.C*.9} 0) rotate(${val.C*.3} 100 104)`);
-$("#gPe").setAttribute("transform",`translate(${val.B*.9} 0) rotate(${val.B*.3} 100 206)`);
-$("#gD").setAttribute("transform",`rotate(${val.D*1.3} 100 52)`);$("#gE").setAttribute("transform",`rotate(${val.E*1.3} 100 122)`);$("#gA").setAttribute("transform",`rotate(${val.A} 100 100)`);
-const cc=colr(["C","D"]),pp=colr(["A","B","E"]);paint("#bCh",cc);paint("#eD",cc);paint("#bPe",pp);paint("#eE",colr(["E"]));paint("#bA",colr(["A"]))}
-function tick(){const n=performance.now();let cue=null;
-for(const k of K){if(!act(k)){out[k]=0;continue}const x=st(k);if(x){out[k]=out[k]||n;if(n-out[k]>450&&!cue)cue=[k,x]}else out[k]=0}
-const all=K.filter(act),allOk=all.every(k=>st(k)===0);
-if(S.step<2){if(allOk){okT=okT||n;const p=Math.min(1,(n-okT)/HOLD);$("#pg").style.width=p*100+"%";if(p>=1){S.step++;okT=0;chime();$("#pg").style.width="0%"}}else{okT=0;$("#pg").style.width="0%"}}else $("#pg").style.width="100%";
-if(cue&&n-lastCue>1600){lastCue=n;const k=cue[0],x=cue[1];
-if(k==="A")beep(520,.3,"triangle");else if(x<0)beep(330,.25);else{beep(880,.12);beep(880,.12,"sine",.18)}
-$("#cue").textContent=(S.snd?"Звук: ":"Звук був би: ")+(k==="A"?"середній тон, поперек вийшов із нейтралі":x<0?"низький тон, замало":"високий тон, забагато")+" ("+CH[k].n+")"}
-$$(".steps span").forEach((e,i)=>e.className=i<S.step?"done":i===S.step?"cur":"");
-$("#msg").textContent=(S.step===0?"Крок 1. "+T.A[0]:S.step===1?"Крок 2. "+T[1]:"Крок 3. "+T[2])+(S.step<2&&okT?" Тримайте…":"");
-draw()}
-function setVals(o){for(const k of K){val[k]=o[k]??0;$("#r"+k).value=val[k]}tick()}
-function reset(){S.step=0;okT=0;K.forEach(k=>out[k]=0);$("#cue").textContent=S.snd?"Звук: поки тиша.":"Звук вимкнено: підказку видно текстом.";setVals({})}
-K.forEach(k=>$("#r"+k).addEventListener("input",e=>{val[k]=+e.target.value;draw()}));
-$$(".seg button").forEach(b=>b.onclick=()=>{S[b.parentNode.dataset.g]=b.dataset.v;b.parentNode.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));$("#lvd").textContent=LV[S.lv];reset()});
-$("#rst").onclick=reset;
-$("#ok").onclick=()=>{const o={};for(const k of K){const r=rng(k);o[k]=k==="A"?0:Math.round((r[0]+r[1])/2)}setVals(o)};
-$("#er").onclick=()=>{const o={...val};if(S.step>0){o.D=Math.min(30,rng("D")[1]+9)}else{o.A=rng("A")[1]+10}setVals(o)};
-$("#snd").onclick=e=>{S.snd=!S.snd;e.target.setAttribute("aria-pressed",S.snd);e.target.textContent=S.snd?"Звук увімкнено":"Увімкнути звук";if(S.snd){ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume();beep(660,.15)}};
-function setV(){const h=location.hash.slice(1),v=V[h]?h:"tochnist";$("#h1").textContent=V[v].h;$("#lead").textContent=V[v].l;const c=$("#cta"),u=FORM[v];
-if(u){c.href=u;c.textContent="Залишити відгук";c.removeAttribute("aria-disabled")}else{c.removeAttribute("href");c.textContent="Форма відгуку з’явиться тут";c.setAttribute("aria-disabled","true")}}
-addEventListener("hashchange",setV);setV();$("#lvd").textContent=LV.beg;reset();setInterval(tick,100);
-</script>
-</body>
-</html>
+dostupnist:{h:"Вправи при сколіозі 
